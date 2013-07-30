@@ -1,9 +1,9 @@
 var map = null;
-var centerLat = (localStorage['centerLat'] ? Number(localStorage['centerLat']) : 49.065177);
-var centerLng = (localStorage['centerLng'] ? Number(localStorage['centerLng']) : 17.461245);
-var zoomLvl = (localStorage['zoomLvl'] ? Number(localStorage['zoomLvl']) : 12);
-var mapTypeId = (localStorage['mapTypeId'] ? String(localStorage['mapTypeId']) : google.maps.MapTypeId.HYBRID);
-var mapTilt = (localStorage['mapTilt'] ? Number(localStorage['mapTilt']) : 0);
+var centerLat = Number(localStorage['centerLat']) || 49.065177;
+var centerLng = Number(localStorage['centerLng']) || 17.461245;
+var zoomLvl = Number(localStorage['zoomLvl']) || 12;
+var mapTypeId = String(localStorage['mapTypeId']) || google.maps.MapTypeId.HYBRID;
+var mapTilt = Number(localStorage['mapTilt']) || 0;
 var markers = {};
 
 function init() {
