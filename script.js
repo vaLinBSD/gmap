@@ -1,10 +1,21 @@
-var map = null;
-var centerLat = Number(localStorage['centerLat']) || 49.065177;
-var centerLng = Number(localStorage['centerLng']) || 17.461245;
-var zoomLvl = Number(localStorage['zoomLvl']) || 12;
+CONST_DEFAULT_LAT = 49.065177;
+CONST_DEFAULT_LNG = 17.461245;
+CONST_DEFAULT_ZOOMLVL = 12;
+CONST_DEFAULT_MAPTILT = 0;
+CONST_DRAGGABLE = true;
+
+var centerLat = Number(localStorage['centerLat']) || CONST_DEFAULT_LAT;
+var centerLng = Number(localStorage['centerLng']) || CONST_DEFAULT_LNG;
+var zoomLvl = Number(localStorage['zoomLvl']) || CONST_DEFAULT_ZOOMLVL;
 var mapTypeId = String(localStorage['mapTypeId']) || google.maps.MapTypeId.HYBRID;
-var mapTilt = Number(localStorage['mapTilt']) || 0;
+var mapTilt = Number(localStorage['mapTilt']) || CONST_DEFAULT_MAPTILT;
+
+var map = null;
+var marker = null;
 var markers = {};
+
+var client_icon = 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png';
+var ap_icon = 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
 
 function init() {
 	var mapTypeIds = [];
@@ -65,6 +76,36 @@ function init() {
     google.maps.event.trigger(map, 'resize');
     map.setCenter(center);
   });
+
+  // Listener for client marker
+  google.maps.event.addListener(map, 'click', function(position) {
+    if (marker == null) {
+      marker = createMarker(position.latLng, client_icon, CONST_DRAGGABLE);
+      (localStorage['marker.lat'] = position.latLng.lat()) && (localStorage['marker.lng'] = position.latLng.lng());
+    } else {
+      marker.setPosition(position.latLng);
+      (localStorage['marker.lat'] = position.latLng.lat()) && (localStorage['marker.lng'] = position.latLng.lng());
+    }
+  });
+
+  // Set client marker if exists in localStorage
+  (localStorage['marker.lat'] && localStorage['marker.lng']) &&
+    (marker = createMarker(new google.maps.LatLng(parseFloat(localStorage['marker.lat']), parseFloat(localStorage['marker.lng'])), client_icon, CONST_DRAGGABLE));
+}
+
+function createMarker(position, icon, draggable) {
+  var m = new google.maps.Marker({
+    position: position,
+    icon: icon,
+    draggable: draggable,
+    map: map
+  });
+  google.maps.event.addListener(m, 'drag', function() {
+  });
+  google.maps.event.addListener(m, 'dragend', function() {
+    (localStorage['marker.lat'] = m.position.lat()) && (localStorage['marker.lng'] = m.position.lng());
+  });
+  return m;
 }
 
 google.maps.event.addDomListener(window, 'load', init);
