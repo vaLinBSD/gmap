@@ -1,13 +1,14 @@
 CONST_DEFAULT_LAT = 49.065177;
 CONST_DEFAULT_LNG = 17.461245;
 CONST_DEFAULT_ZOOMLVL = 12;
+CONST_DEFAULT_MAPTYPEID = google.maps.MapTypeId.HYBRID;
 CONST_DEFAULT_MAPTILT = 0;
 CONST_DRAGGABLE = true;
 
 var centerLat = Number(localStorage['centerLat']) || CONST_DEFAULT_LAT;
 var centerLng = Number(localStorage['centerLng']) || CONST_DEFAULT_LNG;
 var zoomLvl = Number(localStorage['zoomLvl']) || CONST_DEFAULT_ZOOMLVL;
-var mapTypeId = String(localStorage['mapTypeId']) || google.maps.MapTypeId.HYBRID;
+var mapTypeId = String(localStorage['mapTypeId']) || CONST_DEFAULT_MAPTYPEID;
 var mapTilt = Number(localStorage['mapTilt']) || CONST_DEFAULT_MAPTILT;
 
 var map = null;
@@ -106,6 +107,36 @@ function createMarker(position, icon, draggable) {
     (localStorage['marker.lat'] = m.position.lat()) && (localStorage['marker.lng'] = m.position.lng());
   });
   return m;
+}
+
+function resetMap() {
+  // Reset localStorage values
+  localStorage['centerLat'] = CONST_DEFAULT_LAT;
+  localStorage['centerLng'] = CONST_DEFAULT_LNG;
+  localStorage['zoomLvl'] = CONST_DEFAULT_ZOOMLVL;
+  localStorage['mapTypeId'] = CONST_DEFAULT_MAPTYPEID;
+  localStorage['mapTilt'] = CONST_DEFAULT_MAPTILT;
+  localStorage.removeItem('marker.lat');
+  localStorage.removeItem('marker.lng');
+  // Reset marker object
+  if (marker) {
+    marker.setMap(null);
+    google.maps.event.clearInstanceListeners(marker);
+    marker = null;
+  }
+
+  // Read values from localStorage, else use CONSTs (workaround for broswsers that don't support HTML5 Storage)
+  centerLat = Number(localStorage['centerLat']) || CONST_DEFAULT_LAT;
+  centerLng = Number(localStorage['centerLng']) || CONST_DEFAULT_LNG;
+  zoomLvl = Number(localStorage['zoomLvl']) || CONST_DEFAULT_ZOOMLVL;
+  mapTypeId = String(localStorage['mapTypeId']) || CONST_DEFAULT_MAPTYPEID;
+  mapTilt = Number(localStorage['mapTilt']) || CONST_DEFAULT_MAPTILT;
+
+  // Refresh map with default parameters
+  map.setCenter(new google.maps.LatLng(parseFloat(centerLat), parseFloat(centerLng)));
+  map.setZoom(parseInt(zoomLvl));
+  map.setMapTypeId(String(mapTypeId));
+  map.setTilt(parseInt(mapTilt));
 }
 
 google.maps.event.addDomListener(window, 'load', init);

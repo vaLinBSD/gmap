@@ -11,10 +11,34 @@
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
+  <!-- jQuery -->
   <script src="http://code.jquery.com/jquery.js"></script>
   <!-- Bootstrap -->
   <script src="js/bootstrap.min.js"></script>
 
-  <div id="map_canvas"></div>
+  <div id="dialog-modal" title="Basic modal dialog" style="display:none;">
+    <p>The settings feature is coming soon.</p>
+  </div>
+  <div id="map_container">
+    <div id="map_canvas"></div>
+  </div>
+  <div id="container_splitter"></div>
+  <div id="sidebar_container">
+    <div id="sidebar_canvas">
+      <div id="sudo_buttons">
+        <table width="100%">
+          <tr>
+            <td width="100" style="text-align: center;" class="pointer">
+              [ <span onclick="resetMap();">Reset Map</span> ]
+            </td>
+            <td>&nbsp;</td>
+            <td width="100" style="text-align: center;" id="setings_button" class="pointer">
+              [ <span onclick="optionsModal();">Settings</span> ]
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
