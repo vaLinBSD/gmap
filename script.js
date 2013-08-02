@@ -18,6 +18,8 @@ var markers = {};
 var client_icon = 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png';
 var ap_icon = 'http://maps.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png';
 
+var streetview = null;
+
 function init() {
 	var mapTypeIds = [];
 	for (var type in google.maps.MapTypeId) {
@@ -83,15 +85,23 @@ function init() {
     if (marker == null) {
       marker = createMarker(position.latLng, client_icon, CONST_DRAGGABLE);
       (localStorage['marker.lat'] = position.latLng.lat()) && (localStorage['marker.lng'] = position.latLng.lng());
+      // Set streetview object, new marker created
+      var streetviewOptions = { position: position.latLng, addressControl: false, linksControl: true, panControl: false, zoomControl: false }
+      streetview = new google.maps.StreetViewPanorama(document.getElementById("streetview"), streetviewOptions);
     } else {
       marker.setPosition(position.latLng);
       (localStorage['marker.lat'] = position.latLng.lat()) && (localStorage['marker.lng'] = position.latLng.lng());
+      streetview.setPosition(position.latLng);
     }
   });
 
   // Set client marker if exists in localStorage
-  (localStorage['marker.lat'] && localStorage['marker.lng']) &&
-    (marker = createMarker(new google.maps.LatLng(parseFloat(localStorage['marker.lat']), parseFloat(localStorage['marker.lng'])), client_icon, CONST_DRAGGABLE));
+  if (localStorage['marker.lat'] && localStorage['marker.lng']) {
+    marker = createMarker(new google.maps.LatLng(parseFloat(localStorage['marker.lat']), parseFloat(localStorage['marker.lng'])), client_icon, CONST_DRAGGABLE);
+    // Set streetview object, marker exists in localStorage
+    var streetviewOptions = { position: marker.position, addressControl: false, linksControl: true, panControl: false, zoomControl: false }
+    streetview = new google.maps.StreetViewPanorama(document.getElementById("streetview"), streetviewOptions);
+  }
 }
 
 function createMarker(position, icon, draggable) {
@@ -105,6 +115,7 @@ function createMarker(position, icon, draggable) {
   });
   google.maps.event.addListener(m, 'dragend', function() {
     (localStorage['marker.lat'] = m.position.lat()) && (localStorage['marker.lng'] = m.position.lng());
+    streetview.setPosition(m.position);
   });
   return m;
 }
@@ -138,5 +149,7 @@ function resetMap() {
   map.setMapTypeId(String(mapTypeId));
   map.setTilt(parseInt(mapTilt));
 }
+
+function optionsModal() {}
 
 google.maps.event.addDomListener(window, 'load', init);
