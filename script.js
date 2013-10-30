@@ -88,6 +88,9 @@ function init() {
       // Set streetview object, new marker created
       var streetviewOptions = { position: position.latLng, addressControl: false, linksControl: true, panControl: false, zoomControl: false }
       streetview = new google.maps.StreetViewPanorama(document.getElementById("streetview"), streetviewOptions);
+      google.maps.event.addListener(streetview, 'position_changed', function() {
+        marker.setPosition(this.getPosition());
+      });
     } else {
       marker.setPosition(position.latLng);
       (localStorage['marker.lat'] = position.latLng.lat()) && (localStorage['marker.lng'] = position.latLng.lng());
@@ -101,6 +104,9 @@ function init() {
     // Set streetview object, marker exists in localStorage
     var streetviewOptions = { position: marker.position, addressControl: false, linksControl: true, panControl: false, zoomControl: false }
     streetview = new google.maps.StreetViewPanorama(document.getElementById("streetview"), streetviewOptions);
+    google.maps.event.addListener(streetview, 'position_changed', function() {
+      marker.setPosition(this.getPosition());
+    });
   }
 }
 
